@@ -4,11 +4,12 @@ import { Home, Map as MapIcon, Navigation, AlertTriangle, Shield, User, Menu, X,
 import { cn } from '../utils';
 import { useAppContext } from '../context/AppContext';
 import { motion, AnimatePresence } from 'motion/react';
+import { AlertNotification } from '../components/AlertNotification';
 
 export function Layout() {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   const location = useLocation();
-  const { isDemoMode, simulateDisaster } = useAppContext();
+  const { isDemoMode, simulateDisaster, alerts, removeAlert } = useAppContext();
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: Home },
@@ -42,7 +43,24 @@ export function Layout() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 flex flex-col md:flex-row overflow-hidden font-sans">
+    <div className="min-h-screen bg-slate-950 text-slate-50 flex flex-col md:flex-row overflow-hidden font-sans relative">
+      {/* Alert Notifications Container */}
+      <div className="fixed top-4 right-4 z-[9999] flex flex-col gap-3 pointer-events-none items-end w-full pr-4 md:pr-0">
+        <AnimatePresence mode="popLayout">
+          {alerts.map((alert) => (
+            <AlertNotification
+              key={alert.id}
+              id={alert.id}
+              title={alert.title}
+              message={alert.message}
+              type={alert.type}
+              duration={alert.duration}
+              onDismiss={removeAlert}
+            />
+          ))}
+        </AnimatePresence>
+      </div>
+
       {/* Mobile Topbar */}
       <div className="md:hidden flex items-center justify-between p-4 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md z-40 relative">
         <div className="flex items-center gap-2">
